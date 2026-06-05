@@ -30,6 +30,119 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+// ── Interactive Particle Background ─────────────────────────────────────────
+(function initParticles() {
+    const canvas = document.getElementById('bg-canvas');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    const PARTICLE_COUNT = 80;
+    const CONNECT_DIST = 130;
+    const REPEL_DIST = 100;
+    const REPEL_FORCE = 2.5;
+
+    let mouse = { x: -999, y: -999 };
+    let particles = [];
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    window.addEventListener('mousemove', (e) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+    });
+
+    window.addEventListener('mouseleave', () => {
+        mouse.x = -999;
+        mouse.y = -999;
+    });
+
+    class Particle {
+        constructor() { this.reset(true); }
+
+        reset(initial = false) {
+            this.x = Math.random() * canvas.width;
+            this.y = initial ? Math.random() * canvas.height : -10;
+            this.vx = (Math.random() - 0.5) * 0.5;
+            this.vy = Math.random() * 0.4 + 0.1;
+            this.radius = Math.random() * 2 + 1;
+            this.alpha = Math.random() * 0.5 + 0.2;
+            this.color = Math.random() > 0.5 ? '99,102,241' : '236,72,153'; // indigo or pink
+        }
+
+        update() {
+            // Cursor repulsion
+            const dx = this.x - mouse.x;
+            const dy = this.y - mouse.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < REPEL_DIST) {
+                const force = (REPEL_DIST - dist) / REPEL_DIST * REPEL_FORCE;
+                this.x += (dx / dist) * force;
+                this.y += (dy / dist) * force;
+            }
+
+            this.x += this.vx;
+            this.y += this.vy;
+
+            if (this.y > canvas.height + 10) this.reset();
+        }
+
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${this.color}, ${this.alpha})`;
+            ctx.fill();
+        }
+    }
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+        particles.push(new Particle());
+    }
+
+    function drawConnections() {
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < CONNECT_DIST) {
+                    const opacity = (1 - dist / CONNECT_DIST) * 0.15;
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.strokeStyle = `rgba(99,102,241,${opacity})`;
+                    ctx.lineWidth = 0.8;
+                    ctx.stroke();
+                }
+            }
+        }
+    }
+
+    // Mouse spotlight glow
+    function drawSpotlight() {
+        if (mouse.x === -999) return;
+        const grad = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 200);
+        grad.addColorStop(0, 'rgba(99,102,241,0.07)');
+        grad.addColorStop(1, 'rgba(99,102,241,0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawSpotlight();
+        drawConnections();
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+})();
+
 // Popper.js Tooltip Setup
 const tooltip = document.getElementById('tooltip');
 let popperInstance = null;
