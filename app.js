@@ -11,20 +11,102 @@ if (SUPABASE_URL) {
 // Moment.js - Set current year in footer
 document.getElementById('current-year').textContent = moment().format('YYYY');
 
-// GSAP Page Load Animations
+// GSAP Page Load + Scroll Animations
 document.addEventListener("DOMContentLoaded", () => {
-    // Global animations
+    // Register ScrollTrigger if available
+    if (typeof ScrollTrigger !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+    }
+
+    // ── Hero entrance ──
     gsap.from('.logo', { y: -50, opacity: 0, duration: 1, ease: 'power3.out' });
     gsap.from('.nav-links li', { y: -50, opacity: 0, duration: 1, stagger: 0.1, ease: 'power3.out' });
 
-    // Page specific animations
-    if (document.getElementById('home')) {
-        gsap.from('#home h1', { x: -50, opacity: 0, duration: 1, delay: 0.3, ease: 'power3.out' });
-        gsap.from('#home p', { x: -50, opacity: 0, duration: 1, delay: 0.5, ease: 'power3.out' });
-        gsap.from('.cta-buttons', { y: 20, opacity: 0, duration: 1, delay: 0.7, ease: 'power3.out' });
-        gsap.from('.orb', { scale: 0, opacity: 0, duration: 1.5, delay: 0.5, ease: 'back.out(1.7)' });
+    if (document.querySelector('.hero-section')) {
+        gsap.from('.hero-badge',   { y: 30, opacity: 0, duration: 0.8, delay: 0.2, ease: 'power3.out' });
+        gsap.from('.hero-section h1', { x: -60, opacity: 0, duration: 1, delay: 0.3, ease: 'power3.out' });
+        gsap.from('.hero-section p',  { x: -60, opacity: 0, duration: 1, delay: 0.5, ease: 'power3.out' });
+        gsap.from('.cta-buttons',     { y: 20,  opacity: 0, duration: 1, delay: 0.7, ease: 'power3.out' });
+        gsap.from('.hero-trust',      { y: 20,  opacity: 0, duration: 1, delay: 0.9, ease: 'power3.out' });
+        gsap.from('.hero-img-main',   { scale: 0.85, opacity: 0, duration: 1.2, delay: 0.4, ease: 'back.out(1.7)' });
+        gsap.from('.hero-img-top',    { x: 40,  opacity: 0, duration: 1, delay: 0.7, ease: 'back.out(1.7)' });
+        gsap.from('.hero-img-bot',    { x: 40,  opacity: 0, duration: 1, delay: 0.9, ease: 'back.out(1.7)' });
+        gsap.from('.orb',             { scale: 0, opacity: 0, duration: 1.5, delay: 0.5, ease: 'back.out(1.7)' });
     }
 
+    if (typeof ScrollTrigger !== 'undefined') {
+        // ── Generic fade in ──
+        gsap.utils.toArray('.scroll-fade').forEach(el => {
+            gsap.from(el, {
+                scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' },
+                y: 40, opacity: 0, duration: 0.9, ease: 'power3.out'
+            });
+        });
+
+        // ── Slide from left ──
+        gsap.utils.toArray('.scroll-slide-left').forEach(el => {
+            gsap.from(el, {
+                scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' },
+                x: -60, opacity: 0, duration: 0.9, ease: 'power3.out'
+            });
+        });
+
+        // ── Slide from right ──
+        gsap.utils.toArray('.scroll-slide-right').forEach(el => {
+            gsap.from(el, {
+                scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' },
+                x: 60, opacity: 0, duration: 0.9, ease: 'power3.out'
+            });
+        });
+
+        // ── Slide from bottom ──
+        gsap.utils.toArray('.scroll-slide-up').forEach(el => {
+            gsap.from(el, {
+                scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
+                y: 50, opacity: 0, duration: 0.9, ease: 'power3.out'
+            });
+        });
+
+        // ── Staggered feature cards ──
+        const featureCards = gsap.utils.toArray('.feature-card');
+        if (featureCards.length) {
+            gsap.from(featureCards, {
+                scrollTrigger: { trigger: '.features-grid', start: 'top 80%' },
+                y: 50, opacity: 0, duration: 0.7, stagger: 0.1, ease: 'power3.out'
+            });
+        }
+
+        // ── Animated stat counters ──
+        document.querySelectorAll('.stat-number').forEach(el => {
+            const target = parseInt(el.dataset.target, 10);
+            ScrollTrigger.create({
+                trigger: el,
+                start: 'top 85%',
+                once: true,
+                onEnter: () => {
+                    gsap.to({ val: 0 }, {
+                        val: target,
+                        duration: 2,
+                        ease: 'power2.out',
+                        onUpdate: function() {
+                            el.textContent = Math.round(this.targets()[0].val).toLocaleString();
+                        }
+                    });
+                }
+            });
+        });
+
+        // ── Testimonials stagger ──
+        const testimonials = gsap.utils.toArray('.testimonial-card');
+        if (testimonials.length) {
+            gsap.from(testimonials, {
+                scrollTrigger: { trigger: '.testimonials-grid', start: 'top 80%' },
+                y: 40, opacity: 0, duration: 0.7, stagger: 0.15, ease: 'power3.out'
+            });
+        }
+    }
+
+    // ── Form pages ──
     if (document.getElementById('waitlist') || document.getElementById('contact')) {
         gsap.from('.form-container', { y: 30, opacity: 0, duration: 0.8, delay: 0.3, ease: 'power2.out' });
     }
