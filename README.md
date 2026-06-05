@@ -88,4 +88,3 @@ The project is configured for seamless deployment on **Vercel**.
 - **Continuous Deployment:** Any pushes to the `main` branch automatically trigger a new deployment.
 
 ---
-*Built with ❤️ for the future of the web.*
