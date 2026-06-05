@@ -6,8 +6,6 @@ A promotional website for MAD Tech, a fictional tech startup. Built with plain H
 ---
 
 ## Pages
-| Page | File | Purpose |
-|---|---|---|
 | Home | `index.html` | Landing page with hero section |
 | Waitlist | `waitlist.html` | Email sign-up form |
 | Contact | `contact.html` | Contact message form |
@@ -38,8 +36,6 @@ Stored in `.env` locally and in Vercel for production:
 VITE_SUPABASE_URL=your_project_url
 VITE_SUPABASE_ANON_KEY=your_anon_key
 ```
-> ⚠️ Never commit `.env` to GitHub — it's in `.gitignore`.
-
 ---
 
 ## Deployment
