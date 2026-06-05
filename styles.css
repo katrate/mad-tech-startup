@@ -382,13 +382,14 @@ main {
 
 .step {
     display: grid;
-    grid-template-columns: 80px 1fr 1fr;
+    grid-template-columns: 100px 1fr 1fr;
     gap: 2rem;
     align-items: center;
+    overflow: visible;
 }
 
 .step-reverse {
-    grid-template-columns: 80px 1fr 1fr;
+    grid-template-columns: 100px 1fr 1fr;
     direction: rtl;
 }
 
@@ -396,13 +397,17 @@ main {
 
 .step-num {
     font-family: var(--font-heading);
-    font-size: 5rem;
+    font-size: 3.2rem;
     font-weight: 900;
     line-height: 1;
+    width: 100px;
+    text-align: center;
     background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    opacity: 0.4;
+    opacity: 0.5;
+    overflow: visible;
+    white-space: nowrap;
 }
 
 .step-content h3 {
