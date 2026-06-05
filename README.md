@@ -1,44 +1,91 @@
-# MAD Tech — Project Overview
+# 🚀 MAD Tech Startup
 
-## What is this?
-A promotional website for MAD Tech, a fictional tech startup. Built with plain HTML, CSS, and JavaScript — no frameworks.
+[![Deploy to Vercel](https://img.shields.io/badge/Deploy%20to-Vercel-black?style=flat-square&logo=vercel)](https://techstartup.vercel.app/)
+[![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)]()
+[![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)]()
+[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)]()
+[![GSAP](https://img.shields.io/badge/GSAP-88CE02?style=flat-square&logo=greensock&logoColor=white)]()
+[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat-square&logo=supabase&logoColor=white)]()
 
----
-
-## Pages
-| Home | `index.html` | Landing page with hero section |
-| Waitlist | `waitlist.html` | Email sign-up form |
-| Contact | `contact.html` | Contact message form |
-| News | `news.html` | Live tech headlines |
+A sleek, high-performance promotional website for **MAD Tech**, a visionary tech startup redefining the future of digital experiences. Built without heavy frameworks, relying on vanilla web technologies powered by modern tooling.
 
 ---
 
-## Frontend
-- **HTML/CSS/JS** — Core structure, styling, and logic
-- **GSAP** — Smooth animations and page transitions
-- **Popper.js** — Floating validation tooltips on forms
-- **Moment.js** — Dynamic date formatting
-- **Vite** — Local dev server and build tool (reads `.env` variables)
+## ✨ Features
+
+- **Dynamic Interactive Background:** A custom-built particle canvas that responds to user interactions.
+- **Fluid Animations:** Powered by **GSAP** for smooth scroll triggers and page transitions.
+- **Live Tech News:** Fetches and displays real-time technology headlines using the Hacker News API.
+- **Form Validations & Tooltips:** Custom floating validation UI using **Popper.js**.
+- **Backend Integration:** Real-time data storage for Waitlist and Contact forms using **Supabase**.
 
 ---
 
-## Backend
-- **Supabase** — Cloud database (PostgreSQL)
-  - `waitlist` table — stores sign-up emails
-  - `contacts` table — stores contact form messages
-  - Row Level Security enabled — visitors can only insert, not read
+## 🗺️ Site Structure
+
+| Page | File | Description |
+|------|------|-------------|
+| **Home** | `index.html` | The main landing page featuring the hero section, stats, and testimonials. |
+| **Waitlist** | `waitlist.html` | An interactive email sign-up form for early access. |
+| **Contact** | `contact.html` | A functional contact message form. |
+| **News** | `news.html` | A live feed of the latest tech headlines. |
 
 ---
 
-## Environment Variables
-Stored in `.env` locally and in Vercel for production:
-```
-VITE_SUPABASE_URL=your_project_url
-VITE_SUPABASE_ANON_KEY=your_anon_key
-```
+## 🛠️ Technology Stack
+
+### Frontend
+- **HTML5 / CSS3 / Vanilla JS** — The core building blocks.
+- **GSAP (GreenSock)** — Industry-standard animation library.
+- **Popper.js** — Positioning engine for interactive tooltips.
+- **Moment.js** — Robust date formatting and parsing.
+- **Vite** — Lightning-fast local development server and bundler.
+
+### Backend (BaaS)
+- **Supabase** — Open-source Firebase alternative (PostgreSQL under the hood).
+  - `waitlist` table: securely stores user sign-up emails.
+  - `contacts` table: captures incoming contact requests.
+  - *Note: Row Level Security (RLS) is strictly enabled so public visitors can only insert records, not read them.*
+
 ---
 
-## Deployment
-- **GitHub** → [katrate/mad-tech-startup](https://github.com/katrate/mad-tech-startup)
-- **Vercel** → [techstartup.vercel.app](https://techstartup.vercel.app)
-- Every push to `main` triggers an automatic Vercel redeploy.
+## 🚀 Getting Started
+
+### Prerequisites
+Make sure you have [Node.js](https://nodejs.org/) installed on your machine.
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/katrate/mad-tech-startup.git
+   cd mad-tech-startup
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Environment Setup:**
+   Create a `.env` file in the root directory and add your Supabase credentials:
+   ```env
+   VITE_SUPABASE_URL=your_project_url
+   VITE_SUPABASE_ANON_KEY=your_anon_key
+   ```
+
+4. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## 🌐 Deployment
+
+The project is configured for seamless deployment on **Vercel**.
+- **Live Preview:** [techstartup.vercel.app](https://techstartup.vercel.app)
+- **Continuous Deployment:** Any pushes to the `main` branch automatically trigger a new deployment.
+
+---
+*Built with ❤️ for the future of the web.*
