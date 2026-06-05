@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAD Tech | Waitlist</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="logo">MAD Tech<span>.</span></div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="waitlist.html" class="active">Waitlist</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="news.html">News</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main id="main-content">
+            <!-- Waitlist Section -->
+            <section id="waitlist" class="view active-view" style="opacity: 1; visibility: visible; pointer-events: auto; position: relative; transform: none;">
+                <div class="form-container">
+                    <h2>Early Access</h2>
+                    <p>Be the first to know when we launch.</p>
+                    <form id="waitlist-form">
+                        <div class="input-group">
+                            <label for="waitlist-email">Email Address</label>
+                            <input type="email" id="waitlist-email" name="email" required placeholder="hello@example.com">
+                        </div>
+                        <div class="radio-group">
+                            <p>Would you like to receive updates?</p>
+                            <label class="radio-label">
+                                <input type="radio" name="notifications" value="yes" checked>
+                                <span class="radio-custom"></span> Yes, keep me updated!
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="notifications" value="no">
+                                <span class="radio-custom"></span> No, just waitlist me.
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-full" id="waitlist-submit">Join Waitlist</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>&copy; <span id="current-year"></span> MAD Tech. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <!-- Tooltip Element (Popper.js target) -->
+    <div id="tooltip" role="tooltip">
+        Fields cannot be empty!
+        <div id="arrow" data-popper-arrow></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="app.js"></script>
+</body>
+</html>
