@@ -1,4 +1,12 @@
 # 🚀 MAD Tech Startup
+
+[![Deploy to Vercel](https://img.shields.io/badge/Deploy%20to-Vercel-black?style=flat-square&logo=vercel)](https://techstartup.vercel.app/)
+[![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)]()
+[![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)]()
+[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)]()
+[![GSAP](https://img.shields.io/badge/GSAP-88CE02?style=flat-square&logo=greensock&logoColor=white)]()
+[![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=flat-square&logo=supabase&logoColor=white)]()
+
 A sleek, high-performance promotional website for **MAD Tech**, a visionary tech startup redefining the future of digital experiences. Built without heavy frameworks, relying on vanilla web technologies powered by modern tooling.
 
 ---
@@ -41,6 +49,38 @@ A sleek, high-performance promotional website for **MAD Tech**, a visionary tech
 
 ---
 
+## 🚀 Getting Started
+
+### Prerequisites
+Make sure you have [Node.js](https://nodejs.org/) installed on your machine.
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/katrate/mad-tech-startup.git
+   cd mad-tech-startup
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Environment Setup:**
+   Create a `.env` file in the root directory and add your Supabase credentials:
+   ```env
+   VITE_SUPABASE_URL=your_project_url
+   VITE_SUPABASE_ANON_KEY=your_anon_key
+   ```
+
+4. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+
+---
+
 ## 🌐 Deployment
 
 The project is configured for seamless deployment on **Vercel**.
@@ -48,3 +88,4 @@ The project is configured for seamless deployment on **Vercel**.
 - **Continuous Deployment:** Any pushes to the `main` branch automatically trigger a new deployment.
 
 ---
+*Built with ❤️ for the future of the web.*
