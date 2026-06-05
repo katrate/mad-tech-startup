@@ -49,38 +49,6 @@ A sleek, high-performance promotional website for **MAD Tech**, a visionary tech
 
 ---
 
-## 🚀 Getting Started
-
-### Prerequisites
-Make sure you have [Node.js](https://nodejs.org/) installed on your machine.
-
-### Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/katrate/mad-tech-startup.git
-   cd mad-tech-startup
-   ```
-
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-
-3. **Environment Setup:**
-   Create a `.env` file in the root directory and add your Supabase credentials:
-   ```env
-   VITE_SUPABASE_URL=your_project_url
-   VITE_SUPABASE_ANON_KEY=your_anon_key
-   ```
-
-4. **Run the development server:**
-   ```bash
-   npm run dev
-   ```
-
----
-
 ## 🌐 Deployment
 
 The project is configured for seamless deployment on **Vercel**.
