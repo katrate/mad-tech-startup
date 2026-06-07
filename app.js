@@ -620,8 +620,8 @@ window.loadMessages = async function() {
             <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.8rem;">
                 <label style="font-size: 0.8rem; color: var(--text-secondary);"><i class="fa-solid fa-pencil" style="margin-right: 0.3rem;"></i> ${msg.notes ? 'Edit Note' : 'Add a Note'}</label>
                 <div style="display: flex; gap: 0.5rem;">
-                    <input type="text" id="note-input-${msg.id}" placeholder="Type your note here..." style="flex: 1; padding: 0.8rem 1rem; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: white; transition: border-color 0.3s ease;">
-                    <button class="btn btn-primary" onclick="updateMessageNote('${msg.id}')" style="padding: 0 1.5rem; border-radius: 8px;"><i class="fa-solid fa-check"></i></button>
+                    <input type="text" id="note-input-${msg.id}" value="${msg.notes ? msg.notes.replace(/"/g, '&quot;') : ''}" placeholder="Type your note here..." style="flex: 1; padding: 0.8rem 1rem; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: white; transition: border-color 0.3s ease;">
+                    <button type="button" class="btn btn-primary" onclick="window.updateMessageNote('${msg.id}')" style="padding: 0 1.5rem; border-radius: 8px;"><i class="fa-solid fa-check"></i></button>
                 </div>
             </div>
         </div>
@@ -636,6 +636,8 @@ window.updateMessageNote = async function(id) {
     if (error) showToast('Error', error.message);
     else {
         showToast('Success', 'Note updated!');
-        loadMessages();
+        if (typeof window.loadMessages === 'function') {
+            window.loadMessages();
+        }
     }
 };
