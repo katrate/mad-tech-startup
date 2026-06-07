@@ -263,34 +263,17 @@ async function handleFormSubmit(e, formType) {
     let data = {};
 
     if (formType === 'waitlist') {
-        const emailInput = document.getElementById('waitlist-email');
         const notificationsInput = document.querySelector('input[name="notifications"]:checked');
-
-        if (!emailInput.value.trim()) {
-            showTooltip(emailInput, 'Email cannot be empty.');
-            isValid = false;
-        } else if (!emailInput.validity.valid) {
-            showTooltip(emailInput, 'Please enter a valid email address.');
-            isValid = false;
-        } else {
-            data = {
-                email: emailInput.value.trim(),
-                notifications: notificationsInput.value
-            };
-        }
+        data = {
+            email: window.currentUser.email,
+            notifications: notificationsInput.value
+        };
     } else if (formType === 'contact') {
         const nameInput = document.getElementById('contact-name');
-        const emailInput = document.getElementById('contact-email');
         const messageInput = document.getElementById('contact-message');
 
         if (!nameInput.value.trim()) {
             showTooltip(nameInput, 'Name cannot be empty.');
-            isValid = false;
-        } else if (!emailInput.value.trim()) {
-            showTooltip(emailInput, 'Email cannot be empty.');
-            isValid = false;
-        } else if (!emailInput.validity.valid) {
-            showTooltip(emailInput, 'Please enter a valid email address.');
             isValid = false;
         } else if (!messageInput.value.trim()) {
             showTooltip(messageInput, 'Message cannot be empty.');
@@ -298,7 +281,7 @@ async function handleFormSubmit(e, formType) {
         } else {
             data = {
                 name: nameInput.value.trim(),
-                email: emailInput.value.trim(),
+                email: window.currentUser.email,
                 message: messageInput.value.trim()
             };
         }
@@ -309,12 +292,24 @@ async function handleFormSubmit(e, formType) {
         let dbSuccess = false;
         if (supabase) {
             try {
-                const table = formType === 'waitlist' ? 'waitlist' : 'contacts';
+                const table = formType === 'waitlist' ? 'waitlist' : 'messages';
+                
+                // For messages, we need an authenticated user due to RLS
+                if (formType === 'contact') {
+                    if (!currentUser) throw new Error("You must be signed in to send a message.");
+                    data.user_id = currentUser.id;
+                }
+
                 const { error } = await supabase.from(table).insert([data]);
                 
                 if (error) throw error;
                 dbSuccess = true;
                 console.log(`Saved to Supabase table: ${table}`);
+                
+                // If it was a contact message, refresh the messages list
+                if (formType === 'contact' && typeof loadMessages === 'function') {
+                    loadMessages();
+                }
             } catch (err) {
                 console.error('Error saving to Supabase:', err.message || err);
                 showToast('Database Error', `Failed to save: ${err.message || 'Unknown error'}`);
@@ -395,3 +390,252 @@ async function fetchTechNews() {
 if (document.getElementById('news')) {
     fetchTechNews();
 }
+
+// ── AUTHENTICATION & USER MANAGEMENT ─────────────────────────────
+window.currentUser = null;
+
+async function checkUser() {
+    if (!supabase) return;
+    const { data: { session } } = await supabase.auth.getSession();
+    window.currentUser = session?.user || null;
+    updateNav();
+    
+    // Protect waitlist and contact pages
+    if ((document.getElementById('waitlist') || document.getElementById('contact')) && !window.currentUser) {
+        window.location.href = 'auth.html';
+    }
+
+    if (document.getElementById('contact') && window.currentUser) {
+        loadMessages();
+    }
+}
+
+function updateNav() {
+    const authLinks = document.querySelectorAll('#nav-auth-link');
+    authLinks.forEach(link => {
+        if (window.currentUser) {
+            link.innerHTML = '<i class="fa-solid fa-user"></i>';
+        } else {
+            link.textContent = 'Sign In';
+        }
+    });
+}
+
+if (supabase) {
+    supabase.auth.onAuthStateChange((event, session) => {
+        window.currentUser = session?.user || null;
+        updateNav();
+    });
+    checkUser();
+}
+
+// Auth Page Handling
+const authBox = document.getElementById('auth-box');
+const profileBox = document.getElementById('profile-box');
+const authForm = document.getElementById('auth-form');
+const authToggleBtn = document.getElementById('auth-toggle-btn');
+const authTitle = document.getElementById('auth-title');
+const authSubtitle = document.getElementById('auth-subtitle');
+const authSubmit = document.getElementById('auth-submit');
+const btnSignout = document.getElementById('btn-signout');
+const profileForm = document.getElementById('profile-form');
+
+let isSignUp = false;
+
+if (document.getElementById('auth')) {
+    authToggleBtn.addEventListener('click', () => {
+        isSignUp = !isSignUp;
+        if (isSignUp) {
+            authTitle.textContent = 'Sign Up';
+            authSubtitle.textContent = 'Create a new account.';
+            authSubmitBtn.textContent = 'Sign Up';
+            authToggleBtn.innerHTML = 'Already have an account? <span>Sign In</span>';
+            document.getElementById('signup-username-group').classList.remove('hidden');
+            document.getElementById('auth-email').placeholder = 'hello@example.com';
+            document.getElementById('auth-email-label').textContent = 'Email Address';
+        } else {
+            authTitle.textContent = 'Sign In';
+            authSubtitle.textContent = 'Access your account.';
+            authSubmitBtn.textContent = 'Sign In';
+            authToggleBtn.innerHTML = 'Need an account? <span>Sign Up</span>';
+            document.getElementById('signup-username-group').classList.add('hidden');
+            document.getElementById('auth-email').placeholder = 'hello@example.com or cool_user';
+            document.getElementById('auth-email-label').textContent = 'Email or Username';
+        }
+    });
+
+    authForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const loginInput = document.getElementById('auth-email').value;
+        const password = document.getElementById('auth-password').value;
+
+        if (isSignUp) {
+            const signupUsername = document.getElementById('auth-username').value.trim();
+            if (!loginInput.includes('@')) {
+                showToast('Error', 'Please provide a valid email to sign up.');
+                return;
+            }
+            if (!signupUsername) {
+                showToast('Error', 'Please provide a username to sign up.');
+                return;
+            }
+            const { data, error } = await supabase.auth.signUp({ email: loginInput, password });
+            if (error) showToast('Error', error.message);
+            else {
+                if (data.user) {
+                    await supabase.from('profiles').upsert({
+                        id: data.user.id,
+                        email: loginInput,
+                        username: signupUsername
+                    });
+                }
+                showToast('Success', 'Account created successfully!');
+                if (data.session) {
+                   showProfileBox();
+                   loadProfile(data.user.id);
+                }
+            }
+        } else {
+            let loginEmail = loginInput;
+            if (!loginEmail.includes('@')) {
+                const { data: profileData, error: profileError } = await supabase.from('profiles').select('email').eq('username', loginEmail).single();
+                if (profileError || !profileData) {
+                    showToast('Error', 'Username not found.');
+                    return;
+                }
+                if (!profileData.email) {
+                    showToast('Error', 'Email not linked to username. Please log in with your email and save your profile again to link them.');
+                    return;
+                }
+                loginEmail = profileData.email;
+            }
+            const { data, error } = await supabase.auth.signInWithPassword({ email: loginEmail, password });
+            if (error) showToast('Error', error.message);
+            else {
+                showToast('Success', 'Signed in successfully. Redirecting...');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            }
+        }
+    });
+
+    btnSignout.addEventListener('click', async () => {
+        await supabase.auth.signOut();
+        showAuthBox();
+        showToast('Success', 'Signed out.');
+    });
+
+    profileForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('profile-username')?.value;
+        const bio = document.getElementById('profile-bio').value;
+        const gender = document.getElementById('profile-gender').value;
+        
+        const { error } = await supabase.from('profiles').upsert({
+            id: window.currentUser.id,
+            email: window.currentUser.email,
+            username,
+            bio,
+            gender
+        });
+
+        if (error) showToast('Error', error.message);
+        else {
+            showToast('Success', 'Profile updated! Redirecting...');
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1500);
+        }
+    });
+}
+
+function showAuthBox() {
+    if(authBox) authBox.classList.remove('hidden');
+    if(profileBox) profileBox.classList.add('hidden');
+}
+
+function showProfileBox() {
+    if(authBox) authBox.classList.add('hidden');
+    if(profileBox) profileBox.classList.remove('hidden');
+    if (window.currentUser) {
+        loadProfile(window.currentUser.id);
+    }
+}
+
+async function loadProfile(userId) {
+    if (!supabase) return;
+    const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
+    if (data && document.getElementById('profile-bio')) {
+        if (document.getElementById('profile-username')) {
+            document.getElementById('profile-username').value = data.username || '';
+        }
+        document.getElementById('profile-bio').value = data.bio || '';
+        document.getElementById('profile-gender').value = data.gender || '';
+    }
+}
+
+if (document.getElementById('auth')) {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+            showProfileBox();
+        } else {
+            showAuthBox();
+        }
+    });
+}
+
+// ── MESSAGES CRUD (Contact Page) ─────────────────────────────
+window.loadMessages = async function() {
+    const list = document.getElementById('messages-list');
+    if (!list || !window.currentUser) return;
+    
+    const { data, error } = await supabase.from('messages').select('*').eq('user_id', window.currentUser.id).order('created_at', { ascending: false });
+    
+    if (error) {
+        console.error('Error fetching messages', error);
+        return;
+    }
+
+    if (data.length === 0) {
+        list.innerHTML = '<p>No messages sent yet.</p>';
+        return;
+    }
+
+    list.innerHTML = data.map(msg => `
+        <div class="message-card" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; transition: transform 0.3s ease, border-color 0.3s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                <h4 style="margin: 0; color: var(--accent-primary); font-size: 1.1rem;"><i class="fa-regular fa-comment-dots"></i> Message</h4>
+                <span style="font-size: 0.8rem; color: var(--text-secondary); background: rgba(0,0,0,0.3); padding: 0.2rem 0.6rem; border-radius: 999px;">${new Date(msg.created_at).toLocaleDateString()}</span>
+            </div>
+            <p style="color: var(--text-primary); line-height: 1.6; margin-bottom: 1.5rem; background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">${msg.message}</p>
+            
+            ${msg.notes ? `
+            <div style="margin-bottom: 1.5rem; padding-left: 1rem; border-left: 2px solid var(--accent-secondary);">
+                <h5 style="margin: 0 0 0.5rem; color: var(--accent-secondary); font-size: 0.9rem;"><i class="fa-solid fa-thumbtack"></i> Notes</h5>
+                <p style="margin: 0; color: var(--text-secondary); font-size: 0.95rem; font-style: italic;">${msg.notes}</p>
+            </div>
+            ` : ''}
+            
+            <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.8rem;">
+                <label style="font-size: 0.8rem; color: var(--text-secondary);"><i class="fa-solid fa-pencil" style="margin-right: 0.3rem;"></i> ${msg.notes ? 'Edit Note' : 'Add a Note'}</label>
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" id="note-input-${msg.id}" placeholder="Type your note here..." style="flex: 1; padding: 0.8rem 1rem; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: white; transition: border-color 0.3s ease;">
+                    <button class="btn btn-primary" onclick="updateMessageNote('${msg.id}')" style="padding: 0 1.5rem; border-radius: 8px;"><i class="fa-solid fa-check"></i></button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+};
+
+window.updateMessageNote = async function(id) {
+    const note = document.getElementById(`note-input-${id}`).value;
+    if (!note) return showToast('Error', 'Note cannot be empty');
+
+    const { error } = await supabase.from('messages').update({ notes: note }).eq('id', id);
+    if (error) showToast('Error', error.message);
+    else {
+        showToast('Success', 'Note updated!');
+        loadMessages();
+    }
+};
