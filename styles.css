@@ -481,7 +481,8 @@ main {
     gap: 0.75rem;
 }
 
-.testimonial-author img {
+.testimonial-author img,
+.testimonial-author .testimonial-avatar {
     width: 44px; height: 44px;
     border-radius: 50%;
     border: 2px solid var(--accent-primary);
